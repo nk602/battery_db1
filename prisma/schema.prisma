@@ -1,0 +1,146 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Driver {
+  id                Int        @id @unique @default(autoincrement())
+  mobileNo          String     @unique
+  driverId          String     @unique
+  driverOldId       String?    @unique
+  batteryID         String?    
+  driver            String?
+  code              Int?
+  expiryIn          Int?
+  currentIn         Int?
+  bss               String?
+  bssCode           String?     @unique
+  referral             Referral[]       
+  driverExtendedData   DriverExtendedData[]
+  VehicleDetails       VehicleDetails[]
+  VehicleOwner         VehicleOwner []
+  GuarantorDetails     GuarantorDetails []
+  createdAt   DateTime?  @default(now())
+  updatedAt   DateTime?  @updatedAt
+}
+
+model DealerData {
+  id          Int       @id @unique @default(autoincrement())
+  bssCode     String?   @unique
+  bss         String?
+  address     String?
+  city        String?
+  state       String?
+  countryName String?
+  pincode     Int?
+  coordinates String?
+}
+
+model DriverExtendedData {
+  id              Int               @id @unique @default(autoincrement())
+  otp             Int?
+  role            String
+  expiryIn        Int?
+  currentIn       Int?
+  AadharId        Int?
+  AssetService    String
+  ValidateDriver  Boolean
+  driver          Driver            @relation(fields: [driverMasterId], references: [bssCode])
+  driverMasterId  String            @unique
+}
+
+
+
+model Referral {
+  id                    Int       @id @unique @default(autoincrement())
+  referralNo            Int       @unique @default(autoincrement())
+  referralName          String
+  referralContactNumber Int       @unique
+  referralRelationship  String
+  createdAt             DateTime? @default(now())
+  driver                Driver    @relation(fields: [driverId], references: [driverOldId])
+  driverId              String    // relation scalar field (used in the `@relation` attribute
+}
+
+model Session {
+  id        String   @id
+  sid       String   @unique
+  data      String
+  expiresAt DateTime
+ // user      User     @relation(fields: [userId], references: [id])
+  //userId    Int      @unique
+}
+ 
+ 
+ 
+model  VehicleDetails  {
+   
+   
+  id                    Int        @id @unique @default(autoincrement())
+  vehicleType         String
+  vehicleRegNo        String
+  regValidity         String
+  chasisNo            String       @unique
+  vehicleMake         String
+  vehicleModel        String
+  purchaseDate        String
+  vehicleFinanced     String
+  financerName        String
+  financerContactNo   Int          @unique        
+  insuranceStatus     String
+  insuranceUpto       String 
+  uploadRCdocument    String
+  driver              Driver    @relation(fields: [driverId], references: [driverOldId])
+  driverId            String    @unique// relation scalar field (used in the `@relation` attribute
+  
+  
+}
+ model  VehicleOwner   {
+    id                            String   @id
+    vehicleId                     String
+    name                          String  
+    mobileNo                      String   @unique 
+    currentAddress                String
+    currentAddressArea            String
+    currentAddressPin             String
+    currentAddressCity            String
+    currentAddressState           String
+    permanentAddress              String
+    permanentAddressArea          String
+    permanentAddressPin           String
+    permanentAddressCity          String
+    permanentAddressState         String
+    AdharId                       String
+    uploadDocument                String
+    driver                        Driver    @relation(fields: [driverId], references: [driverOldId])
+    driverId                      String     
+ }
+ model GuarantorDetails  {
+     
+    id                            String   @id
+    name                          String  
+    mobileNo                      Int      @unique
+    currentAddress                String
+    currentAddressArea            String
+    currentAddressPin             String
+    currentAddressCity            String
+    currentAddressState           String
+    permanentAddress              String
+    permanentAddressArea          String
+    permanentAddressPin           String
+    permanentAddressCity          String
+    permanentAddressState         String
+    AdharId                       String
+    UploadDocument                String
+    driver                        Driver    @relation(fields: [driverId], references: [driverOldId])
+    driverId                      String   
+
+
+
+ }
+
+
